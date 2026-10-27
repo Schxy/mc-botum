@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer');
 const express = require('express');
 const app = express();
 
-app.get('/', (req, res) => res.send('Botlar aktif! Çift char devrede.'));
+app.get('/', (req, res) => res.send('Botlar aktif!'));
 app.listen(3000, () => console.log('Web sunucusu calisiyor'));
 
 process.on('uncaughtException', (err) => {
@@ -35,18 +35,24 @@ function createBot(hesap) {
     
     setTimeout(() => {
       bot.chat('/login ' + hesap.pass);
-      console.log(`[${hesap.username}] Sifre yazildi. Skyblock'a geciliyor...`);
+      console.log(`[${hesap.username}] Sifre yazildi (/login ${hesap.pass}).`);
       
+      // 4 saniye sonra 1. deneme
       setTimeout(() => {
         bot.chat('/skyblock');
-        console.log(`[${hesap.username}] /skyblock komutu atildi.`);
+        console.log(`[${hesap.username}] 1. kez /skyblock atildi.`);
         
+        // Sunucu ilkini yutarsa diye 6 saniye sonra 2. deneme
         setTimeout(() => {
-          bot.chat('/tpa Schxy'); 
-          console.log(`[${hesap.username}] TPA istegi gonderildi.`);
-        }, 10000);
-        
-      }, 5000);
+          bot.chat('/skyblock');
+          console.log(`[${hesap.username}] 2. kez /skyblock atildi (Garanti).`);
+          
+          setTimeout(() => {
+            bot.chat('/tpa Schxy'); 
+            console.log(`[${hesap.username}] TPA istegi gonderildi.`);
+          }, 8000);
+        }, 6000);
+      }, 4000);
     }, 3000);
   });
 
@@ -54,13 +60,15 @@ function createBot(hesap) {
     const msg = message.toString();
     const cleanMsg = msg.toLowerCase();
     
-    // Yetkili isimleri belirle
+    // SUNUCUNUN TÜM CHAT MESAJLARINI RENDER LOGLARINA YAZDIR:
+    console.log(`[${hesap.username} CHAT]:`, msg);
+    
     let komutuVeren = '';
     if (msg.includes('Schxy')) komutuVeren = 'Schxy';
     else if (msg.includes('BaI') || msg.includes('Bal')) komutuVeren = 'BaI';
     else if (msg.includes('aForse')) komutuVeren = 'aForse';
     
-    // 1. ÖZEL REPLİK: Sadece AfkKralll söyler!
+    // Özel replik
     if (hesap.username === 'AfkKralll') {
       if ((msg.includes('Schxy') || msg.includes('BaI') || msg.includes('Bal')) && 
           (cleanMsg.includes('kurban olduğum şuraları bi aydınlat hele') || (cleanMsg.includes('kurban') && cleanMsg.includes('aydınlat')))) {
@@ -70,19 +78,13 @@ function createBot(hesap) {
       }
     }
 
-    // 2. TPA VE HAREKET KOMUTLARI
+    // Komutlar
     if (komutuVeren !== '') {
-      // !gel yazınca o kişiye tpa atar
-      if (msg.includes('!gel')) {
-        bot.chat('/tpa ' + komutuVeren);
-      }
-      
-      // !kabul yazınca veya sizden biri bota tpa atarsa otomatik kabul eder
+      if (msg.includes('!skyblock')) bot.chat('/skyblock');
+      if (msg.includes('!gel')) bot.chat('/tpa ' + komutuVeren);
       if (msg.includes('!kabul') || cleanMsg.includes('istek') || cleanMsg.includes('tpaccept') || cleanMsg.includes('ışınlanmak')) {
         bot.chat('/tpaccept');
       }
-      
-      // Zıplama komutu
       if (msg.includes('!zıpla') || msg.includes('!zipla')) {
         bot.setControlState('jump', true);
         setTimeout(() => bot.setControlState('jump', false), 1500);
