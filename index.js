@@ -21,7 +21,7 @@ function createBot(hesap) {
     host: 'play.reborncraft.pw', 
     port: 25565, 
     username: hesap.username, 
-    version: '1.16.5' 
+    version: '1.21.8' // 1.21.8 SÜRÜMÜNE AYARLANDI!
   });
   
   bot.on('error', (err) => console.log(`[${hesap.username}] HATA:`, err.message));
@@ -37,12 +37,10 @@ function createBot(hesap) {
       bot.chat('/login ' + hesap.pass);
       console.log(`[${hesap.username}] Sifre yazildi (/login ${hesap.pass}).`);
       
-      // 4 saniye sonra 1. deneme
       setTimeout(() => {
         bot.chat('/skyblock');
         console.log(`[${hesap.username}] 1. kez /skyblock atildi.`);
         
-        // Sunucu ilkini yutarsa diye 6 saniye sonra 2. deneme
         setTimeout(() => {
           bot.chat('/skyblock');
           console.log(`[${hesap.username}] 2. kez /skyblock atildi (Garanti).`);
@@ -60,7 +58,6 @@ function createBot(hesap) {
     const msg = message.toString();
     const cleanMsg = msg.toLowerCase();
     
-    // SUNUCUNUN TÜM CHAT MESAJLARINI RENDER LOGLARINA YAZDIR:
     console.log(`[${hesap.username} CHAT]:`, msg);
     
     let komutuVeren = '';
